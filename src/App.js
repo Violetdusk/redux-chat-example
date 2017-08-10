@@ -34,16 +34,17 @@ class _InputBox extends Component {
 
   render() {
     return (
-      <div className="chat-input">
+      <form className="chat-input" onSubmit={this.handleOnSubmit.bind(this)}>
         <input value={this.state.text} onChange={(e) => this.setState({ text: e.target.value })} type="text" />
-        <button onClick={this.handleOnClick.bind(this)}>
+        <button type="submit">
           Send
         </button>
-      </div>
+      </form>
     )
   }
 
-  handleOnClick() {
+  handleOnSubmit(e) {
+    e.preventDefault()
     this.props.send(this.state.text);
     this.setState({ text: '' });
   }
@@ -57,9 +58,16 @@ const mapStateToProps = (state) => {
 };
 
 class _ChatBox extends Component {
+
+  componentDidUpdate(prevProps, prevState) {
+    console.log(this.refs.chatbox);
+    let chatbox = this.refs.chatbox;
+    chatbox.scrollTop = chatbox.scrollHeight;
+  }
+
   render() {
     return (
-      <div className="chat-box">
+      <div className="chat-box" ref="chatbox">
         {
           Object.keys(this.props.chatData).map(v => (<ChatLine chatline={this.props.chatData[v]} />))
         }
@@ -104,7 +112,7 @@ function chattingApp(state = { chatData: {} }, action) {
       };
 
       return Object.assign({}, state, { chatData: newChatData });
-      
+
     default:
       return state;
   }
